@@ -384,12 +384,15 @@ typedef enum {
 {
 	const CGRect bounds = self.bounds;
 	
-	// I kind of suspect that the "right" thing to do is to draw the background and then paint over it with the tintColor doing some kind of blending
-	// so that it actually doesn "tint" the image instead of define it. That'd probably work better with the bottom line coloring and stuff, too, but
-	// for now hardcoding stuff works well enough.
-	
-	[_tintColor setFill];
-	UIRectFill(bounds);
+    UIImage *background = [UIImage _toolbarBackgroundImage];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextDrawImage(context, bounds, [background CGImage]);
+    
+    if (_tintColor)
+    {
+        [_tintColor setFill];
+        UIRectFillUsingBlendMode(bounds, kCGBlendModeScreen);
+    }
 }
 
 @end
