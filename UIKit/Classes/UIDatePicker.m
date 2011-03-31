@@ -32,24 +32,150 @@
 
 @implementation UIDatePicker
 
-@synthesize calendar = _calendar;
-@synthesize date = _date;
-@synthesize locale = _locale;
-@synthesize timeZone = _timeZone;
-@synthesize datePickerMode = _datePickerMode;
-@synthesize minimumDate = _minimumDate;
-@synthesize maximumDate = _maximumDate;
-@synthesize minuteInterval = _minuteInterval;
-@synthesize countDownDuration = _countDownDuration;
+- (id) initWithFrame:(CGRect)frame
+{
+    if ((self = [super initWithFrame: frame]) != nil)
+    {
+        pickerCell = [[NSDatePickerCell alloc] init];
+        [pickerCell setDatePickerElements: NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag];
+        _datePickerMode = UIDatePickerModeDateAndTime;
+        CGRect frame2 = frame;
+        frame2.origin.x = 0;
+        frame2.origin.y = 0;
+        cellControl = [[UINSCellControl alloc] initWithFrame: frame2
+                                                        cell: pickerCell];
+        cellControl.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        [self addSubview: cellControl];
+    }
+    return self;
+}
+
+#pragma mark -
+#pragma mark Property implementations.
+
+- (void) setCalendar:(NSCalendar *)calendar
+{
+    [pickerCell setCalendar: calendar];
+}
+
+- (NSCalendar *) calendar
+{
+    return [pickerCell calendar];
+}
+
+- (void) setCountDownDuration:(NSTimeInterval)countDownDuration
+{
+    [pickerCell setTimeInterval: countDownDuration * 60];
+}
+
+- (NSTimeInterval) countDownDuration
+{
+    return ([pickerCell timeInterval] / 60);
+}
+
+- (void) setDatePickerMode: (UIDatePickerMode) datePickerMode
+{
+    switch (datePickerMode)
+    {
+        case UIDatePickerModeCountDownTimer:
+            // LAME HACK
+            [pickerCell setDatePickerElements: NSHourMinuteDatePickerElementFlag];
+            break;
+
+        case UIDatePickerModeTime:
+            [pickerCell setDatePickerElements: NSHourMinuteDatePickerElementFlag];
+            break;
+            
+        case UIDatePickerModeDate:
+            [pickerCell setDatePickerElements: NSYearMonthDayDatePickerElementFlag];
+            break;
+            
+        case UIDatePickerModeDateAndTime:
+            [pickerCell setDatePickerElements: NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag];
+            break;
+            
+        default:
+            return;
+    }
+    _datePickerMode = datePickerMode;
+}
+
+- (UIDatePickerMode) datePickerMode
+{
+    return _datePickerMode;
+}
+
+- (void) setDate:(NSDate *)date animated:(BOOL)animated
+{
+    [self setDate: date];
+}
+
+- (void) setDate:(NSDate *)date
+{
+    [pickerCell setDateValue: date];
+}
+
+- (NSDate *) date
+{
+    return [pickerCell dateValue];
+}
+
+- (void) setLocale:(NSLocale *)locale
+{
+    [pickerCell setLocale: locale];
+}
+
+- (NSLocale *) locale
+{
+    return [pickerCell locale];
+}
+
+- (void) setMaximumDate:(NSDate *)maximumDate
+{
+    [pickerCell setMaxDate: maximumDate];
+}
+
+- (NSDate *) maximumDate
+{
+    return [pickerCell maxDate];
+}
+
+- (void) setMinimumDate:(NSDate *)minimumDate
+{
+    [pickerCell setMinDate: minimumDate];
+}
+
+- (NSDate *) minimumDate
+{
+    return [pickerCell minDate];
+}
+
+- (void) setMinuteInterval:(NSInteger)minuteInterval
+{
+}
+
+- (NSInteger) minuteInterval
+{
+    return 1; // TODO
+}
+
+- (void) setTimeZone:(NSTimeZone *)timeZone
+{
+    [pickerCell setTimeZone: timeZone];
+}
+
+- (NSTimeZone *) timeZone
+{
+    return [pickerCell timeZone];
+}
+
+#pragma mark -
+#pragma mark Memory Management
 
 - (void) dealloc
 {
-    [_calendar release];
-    [_date release];
-    [_locale release];
-    [_timeZone release];
-    [_minimumDate release];
-    [_maximumDate release];
+    [pickerCell release];
+    [cellControl release];
     [super dealloc];
 }
 

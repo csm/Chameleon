@@ -29,7 +29,9 @@
 
 
 #import <Foundation/Foundation.h>
+#import <Appkit/AppKit.h>
 #import "UIControl.h"
+#import "UINSCellControl.h"
 
 typedef enum {
     UIDatePickerModeTime,
@@ -40,18 +42,10 @@ typedef enum {
 
 @interface UIDatePicker : UIControl
 {
-    @private
-    NSCalendar *_calendar;
-    NSDate *_date;
-    NSLocale *_locale;
-    NSTimeZone *_timeZone;
-    
-    UIDatePickerMode _datePickerMode;
-    
-    NSDate *_minimumDate;
-    NSDate *_maximumDate;
-    NSInteger _minuteInterval;
-    NSTimeInterval _countDownDuration;
+    @private    
+    UIDatePickerMode _datePickerMode;    
+    UINSCellControl *cellControl;
+    NSDatePickerCell *pickerCell;
 }
 
 @property (nonatomic, retain) NSCalendar *calendar;
@@ -65,5 +59,7 @@ typedef enum {
 @property (nonatomic, retain) NSDate *maximumDate;
 @property (nonatomic, assign) NSInteger minuteInterval;
 @property (nonatomic, assign) NSTimeInterval countDownDuration;
+
+- (void) setDate: (NSDate *) date animated: (BOOL) animated;
 
 @end
