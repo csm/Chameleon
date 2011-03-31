@@ -38,8 +38,6 @@
 @implementation UIPickerView
 
 @synthesize showsSelectionIndicator = _showsSelectionIndicator;
-@synthesize dataSource = _dataSource;
-@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -55,18 +53,63 @@
     [super dealloc];
 }
 
+- (void) setDataSource:(id<UIPickerViewDataSource>)dataSource
+{
+    _dataSource = dataSource;
+    dataSource_flags.has_numberOfComponentsInPickerView = [_dataSource respondsToSelector: @selector(numberOfComponentsInPickerView:)];
+    dataSource_flags.has_numberOfRowsInComponent = [_dataSource respondsToSelector: @selector(pickerView:numberOfRowsInComponent:)];
+    [self reloadAllComponents];
+}
+
+- (id<UIPickerViewDataSource>) dataSource
+{
+    return _dataSource;
+}
+
+- (void) setDelegate:(id<UIPickerViewDelegate>)delegate
+{
+    _delegate = delegate;
+    delegate_flags.has_didSelectRow_inComponent = [_delegate respondsToSelector: @selector(pickerView:didSelectRow:inComponent:)];
+    delegate_flags.has_rowHeightForComponent = [_delegate respondsToSelector: @selector(pickerView:rowHeightForComponent:)];
+    delegate_flags.has_titleForRow_inComponent = [_delegate respondsToSelector: @selector(pickerView:titleForRow:forComponent:)];
+    delegate_flags.has_viewForRow_inComponent_reusingView = [_delegate respondsToSelector: @selector(pickerView:viewForRow:forComponent:reusingView:)];
+    delegate_flags.has_widthForComponent = [_delegate respondsToSelector: @selector(pickerView:widthForComponent:)];
+}
+
+- (id<UIPickerViewDelegate>) delegate
+{
+    return _delegate;
+}
+
 - (NSInteger) numberOfComponents
 {
-    return 0;
+    NSInteger numberOfComponents = 0;
+    if (dataSource_flags.has_numberOfComponentsInPickerView)
+    {
+        numberOfComponents = [_dataSource numberOfComponentsInPickerView: self];
+    }
+    return numberOfComponents;
 }
 
 - (NSInteger) numberOfRowsInComponent:(NSInteger)component
 {
-    return 0;
+    // FIXME, handle `component' out of range [0,numberOfComponents)
+    NSInteger numberOfRows = 0;
+    if (dataSource_flags.has_numberOfRowsInComponent)
+    {
+        numberOfRows = [_dataSource pickerView: self
+                       numberOfRowsInComponent: component];
+    }
+    return  numberOfRows;
 }
 
 - (void) reloadAllComponents
 {
+    for (UIView *view in self.subviews)
+        [view removeFromSuperview];
+    NSInteger numberOfComponents = [self numberOfComponents];
+    for (int i = 0; i < numberOfComponents; i++)
+        [self reloadComponent: i];
 }
 
 - (void) reloadComponent:(NSInteger)component
@@ -75,7 +118,22 @@
 
 - (CGSize) rowSizeForComponent:(NSInteger)component
 {
-    return CGSizeZero;
+    CGSize rowSize = CGSizeZero;
+    NSInteger numberOfComponents = [self numberOfComponents];
+    if (numberOfComponents > 0)
+    {
+        rowSize.width = self.bounds.size.width / numberOfComponents;
+        rowSize.height = self.bounds.size.height;
+    }
+    if (delegate_flags.has_widthForComponent)
+    {
+        rowSize.width = [_delegate pickerView: self widthForComponent: component];
+    }
+    if (delegate_flags.has_rowHeightForComponent)
+    {
+        rowSize.height = [_delegate pickerView: self rowHeightForComponent: component];
+    }
+    return rowSize;
 }
 
 - (NSInteger) selectedRowInComponent:(NSInteger)component

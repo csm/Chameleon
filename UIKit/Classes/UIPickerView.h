@@ -41,6 +41,21 @@
     id<UIPickerViewDataSource> _dataSource;
     id<UIPickerViewDelegate>   _delegate;
     BOOL _showsSelectionIndicator;
+    
+    struct {
+        BOOL has_rowHeightForComponent : 1;
+        BOOL has_widthForComponent : 1;
+        BOOL has_titleForRow_inComponent : 1;
+        BOOL has_viewForRow_inComponent_reusingView : 1;
+        BOOL has_didSelectRow_inComponent : 1;
+    } delegate_flags;
+    
+    struct {
+        BOOL has_numberOfComponentsInPickerView : 1;
+        BOOL has_numberOfRowsInComponent : 1;
+    } dataSource_flags;
+    
+    NSArray *cellViews;
 }
 
 @property (nonatomic, assign) id<UIPickerViewDataSource> dataSource;
