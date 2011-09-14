@@ -28,6 +28,7 @@
  */
 
 #import "UIDevice.h"
+#import <IOKit/IOKitLib.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
 NSString *const UIDeviceOrientationDidChangeNotification = @"UIDeviceOrientationDidChangeNotification";
@@ -38,55 +39,79 @@ static UIDevice *theDevice;
 
 + (void)initialize
 {
-	if (self == [UIDevice class]) {
-		theDevice = [[UIDevice alloc] init];
-	}
+    if (self == [UIDevice class]) {
+        theDevice = [[UIDevice alloc] init];
+    }
 }
 
 + (UIDevice *)currentDevice
 {
-	return theDevice;
+    return theDevice;
 }
 
 - (UIUserInterfaceIdiom)userInterfaceIdiom
 {
-	return UIUserInterfaceIdiomDesktop;
+    return UIUserInterfaceIdiomDesktop;
 }
 
 - (NSString *)name
 {
-	CFStringRef name = SCDynamicStoreCopyComputerName(NULL,NULL);
-	return [(NSString *)name autorelease];
+    return [(__bridge NSString *)SCDynamicStoreCopyComputerName(NULL,NULL) autorelease];
 }
 
 - (UIDeviceOrientation)orientation
 {
-	return UIDeviceOrientationPortrait;
+    return UIDeviceOrientationPortrait;
 }
 
 - (BOOL)isMultitaskingSupported
 {
-	return YES;
+    return YES;
 }
 
 - (NSString *)systemName
 {
-	return [[NSProcessInfo processInfo] operatingSystemName];
+    return [[NSProcessInfo processInfo] operatingSystemName];
 }
 
 - (NSString *)systemVersion
 {
-	return [[NSProcessInfo processInfo] operatingSystemVersionString];
+    return [[NSProcessInfo processInfo] operatingSystemVersionString];
 }
 
 - (NSString *)model
 {
-	return @"Mac";
+    return @"Mac";
 }
 
 - (NSString *)uniqueIdentifier
 {
-    return [[NSProcessInfo processInfo] globallyUniqueString];
+    NSString *aUniqueIdentifier = nil;
+
+    io_service_t platformExpertDevice =
+        IOServiceGetMatchingService(kIOMasterPortDefault,
+                                    IOServiceMatching("IOPlatformExpertDevice"));
+    if (platformExpertDevice)
+    {
+        CFTypeRef platformUUIDTypeRef =
+            IORegistryEntryCreateCFProperty(platformExpertDevice,
+                                            CFSTR(kIOPlatformUUIDKey),
+                                            kCFAllocatorDefault,
+                                            0);
+        if (platformUUIDTypeRef)
+        {
+            CFTypeID typeID = CFGetTypeID(platformUUIDTypeRef);
+            if (typeID == CFStringGetTypeID())
+            {
+                aUniqueIdentifier = [NSString stringWithString:(__bridge NSString *)platformUUIDTypeRef];
+            }
+            CFRelease(platformUUIDTypeRef);
+        }
+
+        IOObjectRelease(platformExpertDevice);
+    }
+
+    return aUniqueIdentifier;
 }
 
 - (BOOL)isGeneratingDeviceOrientationNotifications

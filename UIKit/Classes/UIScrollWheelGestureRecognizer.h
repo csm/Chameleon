@@ -27,9 +27,17 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScrollViewScrollAnimation.h"
+#import "UIGestureRecognizer.h"
 
-@implementation UIScrollViewScrollAnimation
-@synthesize contentOffsetVelocity, stopTime;
+// This will only trigger on old-school scroll wheels and momentum scroll events.
+// Unlike UIPanGestureRecognizer, this is a discrete recognizer. It is also,
+// obviously, entirely non-standard. :)
+
+@interface UIScrollWheelGestureRecognizer : UIGestureRecognizer {
+    CGPoint _translation;
+}
+
+- (CGPoint)translationInView:(UIView *)view;
+- (void)setTranslation:(CGPoint)translation inView:(UIView *)view;
 
 @end

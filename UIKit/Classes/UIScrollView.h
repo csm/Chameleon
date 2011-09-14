@@ -30,19 +30,24 @@
 #import "UIView.h"
 
 typedef enum {
-	UIScrollViewIndicatorStyleDefault,
-	UIScrollViewIndicatorStyleBlack,
-	UIScrollViewIndicatorStyleWhite
+    UIScrollViewIndicatorStyleDefault,
+    UIScrollViewIndicatorStyleBlack,
+    UIScrollViewIndicatorStyleWhite
 } UIScrollViewIndicatorStyle;
 
-@class UIScroller, UIImageView, UIScrollView;
+extern const float UIScrollViewDecelerationRateNormal;
+extern const float UIScrollViewDecelerationRateFast;
+
+@class UIScroller, UIImageView, UIScrollView, UIPanGestureRecognizer, UIScrollWheelGestureRecognizer;
 
 @protocol UIScrollViewDelegate <NSObject>
 @optional
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
-
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView;
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView;
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view;
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale;
@@ -51,41 +56,50 @@ typedef enum {
 
 @interface UIScrollView : UIView {
 @package
-	id _delegate;
+    __unsafe_unretained id _delegate;
 @private
-	CGPoint _contentOffset;
-	CGSize _contentSize;
-	UIEdgeInsets _contentInset;
-	UIEdgeInsets _scrollIndicatorInsets;
-	UIScroller *_verticalScroller;
-	UIScroller *_horizontalScroller;
-	BOOL _scrollEnabled;
-	BOOL _showsVerticalScrollIndicator;
-	BOOL _showsHorizontalScrollIndicator;
-	float _maximumZoomScale;
-	float _minimumZoomScale;
-	BOOL _scrollsToTop;
-	UIScrollViewIndicatorStyle _indicatorStyle;
-	BOOL _delaysContentTouches;
-	BOOL _canCancelContentTouches;
-	BOOL _pagingEnabled;
-	NSTimer *_dragDelegateTimer;
-	BOOL _bouncesZoom;
+    CGPoint _contentOffset;
+    CGSize _contentSize;
+    UIEdgeInsets _contentInset;
+    UIEdgeInsets _scrollIndicatorInsets;
+    UIScroller *_verticalScroller;
+    UIScroller *_horizontalScroller;
+    BOOL _scrollEnabled;
+    BOOL _showsVerticalScrollIndicator;
+    BOOL _showsHorizontalScrollIndicator;
+    float _maximumZoomScale;
+    float _minimumZoomScale;
+    BOOL _scrollsToTop;
+    UIScrollViewIndicatorStyle _indicatorStyle;
+    BOOL _delaysContentTouches;
+    BOOL _canCancelContentTouches;
+    BOOL _pagingEnabled;
+    float _decelerationRate;
+    
+    BOOL _bouncesZoom;
     BOOL _bounces;
-	BOOL _zooming;
-	NSMutableArray *_scrollAnimations;
-	NSTimer *_scrollTimer;
-	NSTimeInterval _scrollAnimationTime;
-	
-	struct {
-		BOOL scrollViewDidScroll : 1;
-		BOOL scrollViewWillBeginDragging : 1;
-		BOOL scrollViewDidEndDragging : 1;
-		BOOL viewForZoomingInScrollView : 1;
-		BOOL scrollViewWillBeginZooming : 1;
-		BOOL scrollViewDidEndZooming : 1;
-		BOOL scrollViewDidZoom : 1;
-	} _delegateCan;
+    BOOL _zooming;
+    BOOL _dragging;
+    BOOL _decelerating;
+    
+    UIPanGestureRecognizer *_panGestureRecognizer;
+    UIScrollWheelGestureRecognizer *_scrollWheelGestureRecognizer;
+    
+    id _scrollAnimation;
+    NSTimer *_scrollTimer;
+    
+    struct {
+        BOOL scrollViewDidScroll : 1;
+        BOOL scrollViewWillBeginDragging : 1;
+        BOOL scrollViewDidEndDragging : 1;
+        BOOL viewForZoomingInScrollView : 1;
+        BOOL scrollViewWillBeginZooming : 1;
+        BOOL scrollViewDidEndZooming : 1;
+        BOOL scrollViewDidZoom : 1;
+        BOOL scrollViewDidEndScrollingAnimation : 1;
+        BOOL scrollViewWillBeginDecelerating : 1;
+        BOOL scrollViewDidEndDecelerating : 1;
+    } _delegateCan;
 
   // should be flag struct
   BOOL _alwaysBounceHorizontal;
@@ -107,24 +121,29 @@ typedef enum {
 @property (nonatomic) UIScrollViewIndicatorStyle indicatorStyle;
 @property (nonatomic) BOOL showsHorizontalScrollIndicator;
 @property (nonatomic) BOOL showsVerticalScrollIndicator;
-@property (nonatomic) BOOL alwaysBounceVertical;   // stub
-@property (nonatomic) BOOL alwaysBounceHorizontal; // stub
+@property (nonatomic) BOOL bounces;
+@property (nonatomic) BOOL alwaysBounceVertical;
+@property (nonatomic) BOOL alwaysBounceHorizontal;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, assign) id<UIScrollViewDelegate> delegate;
 @property (nonatomic) BOOL scrollsToTop;			// no effect
 @property (nonatomic) BOOL delaysContentTouches;	// no effect
 @property (nonatomic) BOOL canCancelContentTouches; // no effect
 @property (nonatomic, readonly, getter=isDragging) BOOL dragging;
-@property (nonatomic, readonly, getter=isTracking) BOOL tracking; // always returns NO
+@property (nonatomic, readonly, getter=isTracking) BOOL tracking;           // always returns NO
 @property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;	// always returns NO
 @property (nonatomic, assign) BOOL pagingEnabled;
+@property (nonatomic) float decelerationRate;
 
 @property (nonatomic) float maximumZoomScale;
 @property (nonatomic) float minimumZoomScale;
 @property (nonatomic) float zoomScale;
 @property (nonatomic, readonly, getter=isZooming) BOOL zooming;
 @property (nonatomic, readonly, getter=isZoomBouncing) BOOL zoomBouncing;	// always NO
-@property (nonatomic, assign) BOOL bouncesZoom;				  			    // no effect
-@property (nonatomic, assign) BOOL bounces;                                 // no effect
+@property (nonatomic) BOOL bouncesZoom;                                     // no effect
+
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, readonly) UIScrollWheelGestureRecognizer *scrollWheelGestureRecognizer;   // non-standard
+
 
 @end

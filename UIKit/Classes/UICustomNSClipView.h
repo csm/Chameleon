@@ -41,14 +41,17 @@
 @end
 
 @interface UICustomNSClipView : NSClipView {
-	CALayer *parentLayer;
-	id<UICustomNSClipViewBehaviorDelegate> behaviorDelegate;
+    CALayer *parentLayer;
+    id<UICustomNSClipViewBehaviorDelegate> behaviorDelegate;
 }
+
+- (id)initWithFrame:(NSRect)frame;
 
 // A layer parent is just a layer that UICustonNSClipView will attempt to always remain a sublayer of.
 // Circumventing AppKit for fun and profit!
 // The hitDelegate is for faking out the NSView's usual hitTest: checks to handle cases where UIViews are above
 // the UIView that's displaying this layer.
-- (id)initWithFrame:(NSRect)frame layerParent:(CALayer *)layer behaviorDelegate:(id<UICustomNSClipViewBehaviorDelegate>)theDelegate;
+@property (nonatomic, assign) CALayer *parentLayer;
+@property (nonatomic, assign) id<UICustomNSClipViewBehaviorDelegate> behaviorDelegate;
 
 @end

@@ -32,7 +32,7 @@
 @class UIImage, UIColor, NSPasteboard;
 
 @interface UIPasteboard : NSObject {
-	NSPasteboard *pasteboard;
+    NSPasteboard *pasteboard;
 }
 
 + (UIPasteboard *)generalPasteboard;
@@ -46,5 +46,7 @@
 @property (nonatomic, copy) UIColor *color;
 @property (nonatomic, copy) NSArray *colors;
 @property (nonatomic, copy) NSArray *items;
+
+- (void)setValue:(id)value forPasteboardType:(NSString *)pasteboardType;
 
 @end

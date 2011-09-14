@@ -36,15 +36,19 @@
 
 + (id)screenModeWithNSView:(NSView *)theNSView
 {
-	UIScreenMode *mode = [[self alloc] init];
-	mode->_size = NSSizeToCGSize([theNSView bounds].size);
-	mode->_pixelAspectRatio = 1;
-	return [mode autorelease];
+    if (theNSView) {
+        UIScreenMode *mode = [[self alloc] init];
+        mode->_size = NSSizeToCGSize([theNSView bounds].size);
+        mode->_pixelAspectRatio = 1;
+        return [mode autorelease];
+    } else {
+        return nil;
+    }
 }
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self className], self, NSStringFromCGSize(self.size)];
+    return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self className], self, NSStringFromCGSize(self.size)];
 }
 
 @end

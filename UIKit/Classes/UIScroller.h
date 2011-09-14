@@ -35,23 +35,24 @@
 CGFloat UIScrollerWidthForBoundsSize(CGSize boundsSize);
 
 @protocol _UIScrollerDelegate
+- (void)_UIScrollerDidBeginDragging:(UIScroller *)scroller withEvent:(UIEvent *)event;
 - (void)_UIScroller:(UIScroller *)scroller contentOffsetDidChange:(CGFloat)newOffset;
 - (void)_UIScrollerDidEndDragging:(UIScroller *)scroller withEvent:(UIEvent *)event;
 @end
 
 @interface UIScroller : UIView {
 @private
-	id _delegate;
-	CGFloat _contentOffset;
-	CGFloat _contentSize;
-	CGFloat _dragOffset;
-	BOOL _draggingKnob;
-	BOOL _isVertical;
-	CGPoint _lastTouchLocation;
-	NSTimer *_holdTimer;
-	UIScrollViewIndicatorStyle _indicatorStyle;
-	NSTimer *_fadeTimer;
-	BOOL _alwaysVisible;
+    __unsafe_unretained id<_UIScrollerDelegate> _delegate;
+    CGFloat _contentOffset;
+    CGFloat _contentSize;
+    CGFloat _dragOffset;
+    BOOL _draggingKnob;
+    BOOL _isVertical;
+    CGPoint _lastTouchLocation;
+    NSTimer *_holdTimer;
+    UIScrollViewIndicatorStyle _indicatorStyle;
+    NSTimer *_fadeTimer;
+    BOOL _alwaysVisible;
 }
 
 // NOTE: UIScroller set's its own alpha to 0 when it is created, so it is NOT visible by default!

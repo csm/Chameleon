@@ -39,17 +39,17 @@
 
 @interface UINavigationController : UIViewController {
 @private
-	UINavigationBar *_navigationBar;
-	UIToolbar *_toolbar;
-	NSMutableArray *_viewControllers;
-	id _delegate;
-	BOOL _toolbarHidden;
+    UINavigationBar *_navigationBar;
+    UIToolbar *_toolbar;
+    NSMutableArray *_viewControllers;
+    __unsafe_unretained id _delegate;
+    BOOL _toolbarHidden;
     BOOL _navigationBarHidden;
-	
-	struct {
-		BOOL didShowViewController : 1;
-		BOOL willShowViewController : 1;
-	} _delegateHas;
+    
+    struct {
+        BOOL didShowViewController : 1;
+        BOOL willShowViewController : 1;
+    } _delegateHas;
 }
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController;
@@ -67,6 +67,7 @@
 - (void)setNavigationBarHidden:(BOOL)navigationBarHidden animated:(BOOL)animated; // doesn't yet animate
 
 @property (nonatomic, copy) NSArray *viewControllers;
+@property (nonatomic, readonly, retain) UIViewController *visibleViewController;
 @property (nonatomic, readonly) UINavigationBar *navigationBar;
 @property (nonatomic, readonly) UIToolbar *toolbar;
 @property (nonatomic, assign) id<UINavigationControllerDelegate> delegate;

@@ -30,20 +30,20 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-	UIImageOrientationUp,
-	UIImageOrientationDown,   // 180 deg rotation
-	UIImageOrientationLeft,   // 90 deg CCW
-	UIImageOrientationRight,   // 90 deg CW
-	UIImageOrientationUpMirrored,    // as above but image mirrored along
-	// other axis. horizontal flip
-	UIImageOrientationDownMirrored,  // horizontal flip
-	UIImageOrientationLeftMirrored,  // vertical flip
-	UIImageOrientationRightMirrored, // vertical flip
+    UIImageOrientationUp,
+    UIImageOrientationDown,   // 180 deg rotation
+    UIImageOrientationLeft,   // 90 deg CCW
+    UIImageOrientationRight,   // 90 deg CW
+    UIImageOrientationUpMirrored,    // as above but image mirrored along
+    // other axis. horizontal flip
+    UIImageOrientationDownMirrored,  // horizontal flip
+    UIImageOrientationLeftMirrored,  // vertical flip
+    UIImageOrientationRightMirrored, // vertical flip
 } UIImageOrientation;
 
 @interface UIImage : NSObject {
 @private
-	CGImageRef _image;
+    CGImageRef _image;
 }
 
 + (UIImage *)imageNamed:(NSString *)name;			// Note, this caches the images somewhat like iPhone OS 2ish in that it never releases them. :)
@@ -72,5 +72,8 @@ typedef enum {
 @end
 
 void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL completionSelector, void *contextInfo);
+void UISaveVideoAtPathToSavedPhotosAlbum(NSString *videoPath, id completionTarget, SEL completionSelector, void *contextInfo);
+BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath);
+
 NSData *UIImageJPEGRepresentation(UIImage *image, CGFloat compressionQuality);
 NSData *UIImagePNGRepresentation(UIImage *image);

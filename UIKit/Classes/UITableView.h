@@ -47,6 +47,10 @@ extern NSString *const UITableViewIndexSearch;
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section;
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;
+
+- (void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(UITableView *)tableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath;
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 @protocol UITableViewDataSource <NSObject>
@@ -57,67 +61,75 @@ extern NSString *const UITableViewIndexSearch;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section;
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 typedef enum {
-	UITableViewStylePlain,
-	UITableViewStyleGrouped
+    UITableViewStylePlain,
+    UITableViewStyleGrouped
 } UITableViewStyle;
 
 typedef enum {
-	UITableViewScrollPositionNone,
-	UITableViewScrollPositionTop,
-	UITableViewScrollPositionMiddle,
-	UITableViewScrollPositionBottom
+    UITableViewScrollPositionNone,
+    UITableViewScrollPositionTop,
+    UITableViewScrollPositionMiddle,
+    UITableViewScrollPositionBottom
 } UITableViewScrollPosition;
 
 typedef enum {
-	UITableViewRowAnimationFade,
-	UITableViewRowAnimationRight,
-	UITableViewRowAnimationLeft,
-	UITableViewRowAnimationTop,
-	UITableViewRowAnimationBottom,
-	UITableViewRowAnimationNone,
-	UITableViewRowAnimationMiddle
+    UITableViewRowAnimationFade,
+    UITableViewRowAnimationRight,
+    UITableViewRowAnimationLeft,
+    UITableViewRowAnimationTop,
+    UITableViewRowAnimationBottom,
+    UITableViewRowAnimationNone,
+    UITableViewRowAnimationMiddle
 } UITableViewRowAnimation;
 
 @interface UITableView : UIScrollView {
 @private
-	UITableViewStyle _style;
-	id<UITableViewDataSource> _dataSource;
-	BOOL _needsReload;
-	CGFloat _rowHeight;
-	UIColor *_separatorColor;
-	UITableViewCellSeparatorStyle _separatorStyle;
-	UIView *_tableHeaderView;
-	UIView *_tableFooterView;
-	BOOL _allowsSelection;
-	BOOL _allowsSelectionDuringEditing;
-	BOOL _editing;
-	NSIndexPath *_selectedRow;
-	NSMutableDictionary *_cachedCells;
-	NSMutableSet *_reusableCells;
-	NSMutableArray *_sections;
-	CGFloat _sectionHeaderHeight;
-	CGFloat _sectionFooterHeight;
-	
-	struct {
-		BOOL heightForRowAtIndexPath : 1;
-		BOOL heightForHeaderInSection : 1;
-		BOOL heightForFooterInSection : 1;
-		BOOL viewForHeaderInSection : 1;
-		BOOL viewForFooterInSection : 1;
-		BOOL willSelectRowAtIndexPath : 1;
-		BOOL didSelectRowAtIndexPath : 1;
-		BOOL willDeselectRowAtIndexPath : 1;
-		BOOL didDeselectRowAtIndexPath : 1;
-	} _delegateHas;
-	
-	struct {
-		BOOL numberOfSectionsInTableView : 1;
-		BOOL titleForHeaderInSection : 1;
-		BOOL titleForFooterInSection : 1;
-	} _dataSourceHas;
+    UITableViewStyle _style;
+    __unsafe_unretained id<UITableViewDataSource> _dataSource;
+    BOOL _needsReload;
+    CGFloat _rowHeight;
+    UIColor *_separatorColor;
+    UITableViewCellSeparatorStyle _separatorStyle;
+    UIView *_tableHeaderView;
+    UIView *_tableFooterView;
+    BOOL _allowsSelection;
+    BOOL _allowsSelectionDuringEditing;
+    BOOL _editing;
+    NSIndexPath *_selectedRow;
+    NSMutableDictionary *_cachedCells;
+    NSMutableSet *_reusableCells;
+    NSMutableArray *_sections;
+    CGFloat _sectionHeaderHeight;
+    CGFloat _sectionFooterHeight;
+    
+    struct {
+        BOOL heightForRowAtIndexPath : 1;
+        BOOL heightForHeaderInSection : 1;
+        BOOL heightForFooterInSection : 1;
+        BOOL viewForHeaderInSection : 1;
+        BOOL viewForFooterInSection : 1;
+        BOOL willSelectRowAtIndexPath : 1;
+        BOOL didSelectRowAtIndexPath : 1;
+        BOOL willDeselectRowAtIndexPath : 1;
+        BOOL didDeselectRowAtIndexPath : 1;
+        BOOL willBeginEditingRowAtIndexPath : 1;
+        BOOL didEndEditingRowAtIndexPath : 1;
+        BOOL titleForDeleteConfirmationButtonForRowAtIndexPath: 1;
+    } _delegateHas;
+    
+    struct {
+        BOOL numberOfSectionsInTableView : 1;
+        BOOL titleForHeaderInSection : 1;
+        BOOL titleForFooterInSection : 1;
+        BOOL commitEditingStyle : 1;
+        BOOL canEditRowAtIndexPath : 1;
+    } _dataSourceHas;
 }
 
 - (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style;

@@ -30,26 +30,23 @@
 #import "UISwitch.h"
 
 @implementation UISwitch
+@synthesize on = _on;
 
 - (id)initWithFrame:(CGRect)frame
 {
-	if ((self=[super initWithFrame:frame])) {		// this should enforce the proper size, etc. blah blah...
-	}
-	return self;
+    if ((self=[super initWithFrame:frame])) {		// this should enforce the proper size, etc. blah blah...
+    }
+    return self;
 }
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated
 {
+    _on = on;
 }
 
 - (void)setOn:(BOOL)on
 {
-	[self setOn:on animated:NO];
-}
-
-- (BOOL)isOn
-{
-	return NO;
+    [self setOn:on animated:NO];
 }
 
 @end

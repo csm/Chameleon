@@ -48,7 +48,8 @@ static inline CGRect UIEdgeInsetsInsetRect(CGRect rect, UIEdgeInsets insets) {
 }
 
 static inline BOOL UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsets insets1, UIEdgeInsets insets2) {
-    return insets1.left == insets2.left && insets1.top == insets2.top && insets1.right == insets2.right && insets1.bottom == insets2.bottom;
+    return CGRectEqualToRect(CGRectMake(insets1.left, insets1.top, insets1.right, insets1.bottom),
+                             CGRectMake(insets2.left, insets2.top, insets2.right, insets2.bottom));
 }
 
 extern const UIEdgeInsets UIEdgeInsetsZero;
@@ -58,6 +59,8 @@ NSString *NSStringFromCGRect(CGRect r);
 NSString *NSStringFromCGSize(CGSize s);
 
 NSString *NSStringFromCGAffineTransform(CGAffineTransform transform);
+
+NSString *NSStringFromUIEdgeInsets(UIEdgeInsets insets);
 
 @interface NSValue (NSValueUIGeometryExtensions)
 + (NSValue *)valueWithCGPoint:(CGPoint)point;

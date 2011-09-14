@@ -31,28 +31,29 @@
 
 @interface UIViewAnimationGroup : NSObject {
 @private
-	NSString *_name;
-	void *_context;
-	NSUInteger _waitingAnimations;
-	BOOL _didSendStartMessage;
-	NSTimeInterval _animationDelay;
-	NSTimeInterval _animationDuration;
-	UIViewAnimationCurve _animationCurve;
-	id _animationDelegate;
-	SEL _animationDidStopSelector;
-	SEL _animationWillStartSelector;
-	BOOL _animationBeginsFromCurrentState;
-	BOOL _animationRepeatAutoreverses;
-	float _animationRepeatCount;
-	CFTimeInterval _animationBeginTime;
-	CALayer *_transitionLayer;
-	UIViewAnimationTransition _transitionType;
-	BOOL _transitionShouldCache;
+    NSString *_name;
+    void *_context;
+    NSUInteger _waitingAnimations;
+    BOOL _didSendStartMessage;
+    NSTimeInterval _animationDelay;
+    NSTimeInterval _animationDuration;
+    UIViewAnimationCurve _animationCurve;
+    id _animationDelegate;
+    SEL _animationDidStopSelector;
+    SEL _animationWillStartSelector;
+    BOOL _animationBeginsFromCurrentState;
+    BOOL _animationRepeatAutoreverses;
+    float _animationRepeatCount;
+    CFTimeInterval _animationBeginTime;
+    CALayer *_transitionLayer;
+    UIViewAnimationTransition _transitionType;
+    BOOL _transitionShouldCache;
+    NSMutableSet *_animatingViews;
 }
 
 + (id)animationGroupWithName:(NSString *)theName context:(void *)theContext;
 
-- (id)actionForLayer:(CALayer *)layer forKey:(NSString *)keyPath;
+- (id)actionForView:(UIView *)view forKey:(NSString *)keyPath;
 
 - (void)setAnimationBeginsFromCurrentState:(BOOL)beginFromCurrentState;
 - (void)setAnimationCurve:(UIViewAnimationCurve)curve;

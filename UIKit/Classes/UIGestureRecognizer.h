@@ -30,13 +30,13 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-	UIGestureRecognizerStatePossible,
-	UIGestureRecognizerStateBegan,
-	UIGestureRecognizerStateChanged,
-	UIGestureRecognizerStateEnded,
-	UIGestureRecognizerStateCancelled,
-	UIGestureRecognizerStateFailed,
-	UIGestureRecognizerStateRecognized = UIGestureRecognizerStateEnded
+    UIGestureRecognizerStatePossible,
+    UIGestureRecognizerStateBegan,
+    UIGestureRecognizerStateChanged,
+    UIGestureRecognizerStateEnded,
+    UIGestureRecognizerStateCancelled,
+    UIGestureRecognizerStateFailed,
+    UIGestureRecognizerStateRecognized = UIGestureRecognizerStateEnded
 } UIGestureRecognizerState;
 
 @class UIView, UIGestureRecognizer, UITouch, UIEvent;
@@ -50,19 +50,21 @@ typedef enum {
 
 @interface UIGestureRecognizer : NSObject {
 @private
-	id _delegate;
-	BOOL _delaysTouchesBegan;
-	BOOL _delaysTouchesEnded;
-	BOOL _cancelsTouchesInView;
-	BOOL _enabled;
-	UIGestureRecognizerState _state;
-	__weak UIView *_view;
-	
-	struct {
-		BOOL shouldBegin : 1;
-		BOOL shouldReceiveTouch : 1;
-		BOOL shouldRecognizeSimultaneouslyWithGestureRecognizer : 1;
-	} _delegateHas;	
+    __unsafe_unretained id _delegate;
+    BOOL _delaysTouchesBegan;
+    BOOL _delaysTouchesEnded;
+    BOOL _cancelsTouchesInView;
+    BOOL _enabled;
+    UIGestureRecognizerState _state;
+    UIView *_view;
+    NSMutableArray *_registeredActions;
+    NSMutableArray *_trackingTouches;
+    
+    struct {
+        BOOL shouldBegin : 1;
+        BOOL shouldReceiveTouch : 1;
+        BOOL shouldRecognizeSimultaneouslyWithGestureRecognizer : 1;
+    } _delegateHas;	
 }
 
 - (id)initWithTarget:(id)target action:(SEL)action;
@@ -72,6 +74,8 @@ typedef enum {
 
 - (void)requireGestureRecognizerToFail:(UIGestureRecognizer *)otherGestureRecognizer;
 - (CGPoint)locationInView:(UIView *)view;
+
+- (NSUInteger)numberOfTouches;
 
 @property (nonatomic, assign) id<UIGestureRecognizerDelegate> delegate;
 @property (nonatomic) BOOL delaysTouchesBegan;
